@@ -5,12 +5,14 @@ import os
 import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+from ipaddress import ip_address
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlencode
 from urllib.request import Request, urlopen
 from uuid import uuid4
 
 from flask import Flask, jsonify, render_template, request
+from flask_limiter import Limiter
 
 try:
     from rdkit import Chem
@@ -24,6 +26,26 @@ except ImportError as exc:
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
+
+
+def _client_ip() -> str:
+    # Render's Cloudflare edge overwrites this header with the visitor's address.
+    # Do not use the leftmost X-Forwarded-For value; callers can supply that.
+    forwarded_ip = request.headers.get("CF-Connecting-IP", "").strip()
+    if forwarded_ip:
+        try:
+            return str(ip_address(forwarded_ip))
+        except ValueError:
+            app.logger.warning("Ignoring an invalid CF-Connecting-IP header")
+    return request.remote_addr or "unknown"
+
+
+limiter = Limiter(
+    key_func=_client_ip,
+    app=app,
+    storage_uri="memory://",
+    headers_enabled=True,
+)
 DEEP_PK_API = "https://biosig.lab.uq.edu.au/deeppk/api/predict"
 
 STARTER_MOLECULES = {
@@ -257,6 +279,7 @@ def starters():
 
 
 @app.post("/api/analyze")
+@limiter.limit("20 per minute; 200 per hour")
 def api_analyze():
     data = request.get_json(silent=True) or {}
     smiles = str(data.get("smiles", "")).strip()
@@ -276,6 +299,7 @@ def api_analyze():
 
 
 @app.post("/api/search")
+@limiter.limit("15 per minute; 150 per hour")
 def api_search():
     data = request.get_json(silent=True) or {}
     query = str(data.get("query", "")).strip()
@@ -328,6 +352,7 @@ def api_search():
 
 
 @app.post("/api/activities")
+@limiter.limit("30 per minute; 300 per hour")
 def api_activities():
     data = request.get_json(silent=True) or {}
     chembl_id = str(data.get("chembl_id", "")).strip().upper()
@@ -361,6 +386,7 @@ def api_activities():
 
 
 @app.post("/api/admet/submit")
+@limiter.limit("3 per minute; 30 per day")
 def api_admet_submit():
     data = request.get_json(silent=True) or {}
     smiles = str(data.get("smiles", "")).strip()
@@ -391,6 +417,7 @@ def api_admet_submit():
 
 
 @app.post("/api/admet/status")
+@limiter.limit("120 per minute; 5000 per day")
 def api_admet_status():
     data = request.get_json(silent=True) or {}
     job_id = str(data.get("job_id", "")).strip()
@@ -418,6 +445,15 @@ def api_admet_status():
 @app.errorhandler(413)
 def request_too_large(_error):
     return jsonify({"error": "Request payload is too large."}), 413
+
+
+@app.errorhandler(429)
+def rate_limit_exceeded(error):
+    response = jsonify({"error": "Too many requests. Please wait before trying again."})
+    retry_after = error.get_response().headers.get("Retry-After")
+    if retry_after:
+        response.headers["Retry-After"] = retry_after
+    return response, 429
 
 
 if __name__ == "__main__":

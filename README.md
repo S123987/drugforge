@@ -138,7 +138,7 @@ A custom domain itself is usually a separate recurring purchase from the registr
 
 ## Public prototype notes
 
-- The website has no sign-in, rate limiting, or server-side database. Shortlists stay in a visitor's browser. Add authentication, request throttling, monitoring, and an appropriate data policy before opening it to high-volume public traffic.
+- The website has no sign-in or server-side database. Shortlists stay in a visitor's browser. Expensive analysis and external API routes have per-IP request limits. Their counters use in-memory storage on the current single instance, so they reset on restart and are not shared if the service is scaled out. This is basic abuse resistance for a small public demo, not a substitute for a shared rate-limit store, monitoring, authentication, or an appropriate data policy at higher traffic.
 - Compound searches send the entered query to PubChem and ChEMBL. These services may be temporarily unavailable and their records can be incomplete or assay-specific.
 - ADMET runs are optional and require a separate button click. The selected SMILES is sent to Deep-PK at the University of Queensland. Its privacy page says submitted molecule data are deleted seven days after results are ready; do not submit confidential or unpublished structures. Results are third-party model estimates, not measured data.
 - The 3D model is generated from the input SMILES. It is not a docking result, experimentally determined conformation, or prediction of a protein interaction.
