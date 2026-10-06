@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f4f7">
+  <meta name="description" content="DrugForge is a computational research workspace for exploring small-molecule structures, properties, and public compound records.">
+  <meta property="og:title" content="DrugForge — Molecular research workspace">
+  <meta property="og:description" content="Explore compounds, inspect interactive 3D structures, and compare molecular properties.">
+  <title>DrugForge v3.5 — Molecular research workspace</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23131a24'/%3E%3Cpath d='M20 6 31 12.5v13L20 32 9 25.5v-13L20 6Z' fill='none' stroke='%2374d3e8' stroke-width='2'/%3E%3Ccircle cx='20' cy='19' r='4' fill='%23ec64a8'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://pubchem.ncbi.nlm.nih.gov" crossorigin>
+  <link rel="preconnect" href="https://www.ebi.ac.uk" crossorigin>
+  <link rel="preconnect" href="https://biosig.lab.uq.edu.au" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#overview" data-page-link="overview" aria-label="DrugForge home">
+        <span class="brand-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 5 32 12v14L20 33 8 26V12L20 5Z"/><circle cx="20" cy="19" r="4"/></svg></span>
+        <span><strong>DrugForge</strong><small>MOLECULAR WORKSPACE</small></span>
+      </a>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="nav-list">
+        <button class="nav-item active" data-page="overview"><span class="nav-icon">⌂</span><span>Overview</span></button>
+        <button class="nav-item" data-page="lab"><span class="nav-icon">⌬</span><span>Molecule lab</span></button>
+        <button class="nav-item" data-page="explorer"><span class="nav-icon">⌕</span><span>Compound explorer</span><span class="nav-count">LIVE</span></button>
+        <button class="nav-item" data-page="compare"><span class="nav-icon">▤</span><span>Compare</span><span class="nav-counter" id="nav-shortlist-count">0</span></button>
+        <button class="nav-item" data-page="library"><span class="nav-icon">▦</span><span>Starter library</span></button>
+        <button class="nav-item" data-page="copilot"><span class="nav-icon">✳</span><span>Research notes</span></button>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-foot">
+        <span class="online-dot"></span><span>RDKit analysis ready</span>
+      </div>
+      <div class="sidebar-foot tiny">LOCAL-FIRST · PUBLIC DATA SOURCES</div>
+    </aside>
+
+    <main class="main-shell">
+      <header class="topbar">
+        <div class="breadcrumb"><span>DRUGFORGE</span><span class="crumb-sep">/</span><strong id="current-page-label">OVERVIEW</strong></div>
+        <div class="topbar-actions">
+          <span class="status-chip"><i></i> V3.5 RESEARCH PREVIEW</span>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch theme"><span id="theme-icon">☾</span><span id="theme-label">Dark mode</span></button>
+          <div class="avatar" aria-hidden="true">DF</div>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <section class="page-section active" id="page-overview" aria-labelledby="overview-title">
+          <div class="page-heading">
+            <div><div class="eyebrow">COMPUTATIONAL CHEMISTRY · WORKSPACE</div><h1 id="overview-title">Molecular research,<br><span>at a glance.</span></h1><p class="lede">Inspect structures, explore public compound records, and compare molecular properties in one focused workspace.</p></div>
+            <div class="heading-mark" aria-hidden="true"><span class="hex-orbit orbit-a"></span><span class="hex-orbit orbit-b"></span><span class="hex-core">⌬</span></div>
+          </div>
+          <div class="action-row">
+            <button class="button button-primary" data-go="lab"><span>＋</span> Analyze a molecule</button>
+            <button class="button button-secondary" data-go="explorer"><span>⌕</span> Search public records</button>
+          </div>
+          <div class="stat-grid">
+            <article class="stat-card"><span class="stat-label">SAVED CANDIDATES</span><strong id="overview-shortlist-count">0</strong><span class="stat-foot">In this browser</span><span class="stat-mark">▤</span></article>
+            <article class="stat-card"><span class="stat-label">STARTER MOLECULES</span><strong>06</strong><span class="stat-foot">Ready to explore</span><span class="stat-mark blue">⌬</span></article>
+            <article class="stat-card"><span class="stat-label">LIVE DATA SOURCES</span><strong>02</strong><span class="stat-foot">PubChem + ChEMBL</span><span class="stat-mark red">↗</span></article>
+            <article class="stat-card"><span class="stat-label">ANALYSIS ENGINE</span><strong>RDKit</strong><span class="stat-foot">Local descriptor workflow</span><span class="stat-mark">✳</span></article>
+          </div>
+          <div class="overview-grid">
+            <article class="panel welcome-panel">
+              <div class="panel-kicker">YOUR WORKSPACE</div><h2>Start with a structure.<br>Follow the evidence.</h2>
+              <p>Paste a SMILES string to calculate core descriptors and build an interactive 3D conformer. Or search a compound name to retrieve public records from PubChem and ChEMBL.</p>
+              <div class="workflow-line"><span>01</span><i></i><span>ANALYZE</span><i></i><span>02</span><i></i><span>EXPLORE</span><i></i><span>03</span><i></i><span>COMPARE</span></div>
+              <div class="data-note"><span class="note-icon">ⓘ</span><span>Screening scores are simple property-threshold summaries. They do not predict activity, safety, efficacy, or clinical suitability.</span></div>
+            </article>
+            <article class="panel active-card">
+              <div class="panel-topline"><span class="panel-kicker">LAST ANALYZED</span><span class="live-dot"></span></div>
+              <div id="overview-active"><div class="empty-state compact"><div class="empty-symbol">⌬</div><strong>No molecule analyzed yet</strong><span>Start in Molecule Lab or open a library example.</span></div></div>
+              <button class="text-button" data-go="lab">Open molecule lab <span>↗</span></button>
+            </article>
+          </div>
+          <div class="section-title-row"><div><div class="panel-kicker">WORKFLOW</div><h2>Built for the first pass</h2></div><span class="muted-copy">A transparent research prototype</span></div>
+          <div class="workflow-grid">
+            <article class="workflow-card"><span class="workflow-index">01 / STRUCTURE</span><h3>Explore 3D conformers</h3><p>Generate a force-field-relaxed RDKit conformer, then rotate, pan, and zoom it in the browser.</p><span class="workflow-glyph">◉</span></article>
+            <article class="workflow-card"><span class="workflow-index">02 / EVIDENCE</span><h3>Look up known records</h3><p>Search compound records and selected assay data from PubChem and ChEMBL.</p><span class="workflow-glyph blue">⌕</span></article>
+            <article class="workflow-card"><span class="workflow-index">03 / REVIEW</span><h3>Compare properties</h3><p>Save candidates in this browser and review their computed descriptors side by side.</p><span class="workflow-glyph red">▤</span></article>
+          </div>
+        </section>
+
+        <section class="page-section" id="page-lab" aria-labelledby="lab-title">
+          <div class="section-head"><div><div class="eyebrow">DRUGFORGE / MOLECULE LAB</div><h1 id="lab-title">A closer look at your molecule.</h1><p class="lede">Enter a SMILES string to calculate descriptors, build a mouse-interactive 3D conformer, and request an external ADMET profile.</p></div><span class="tag"><i></i> LOCAL RDKit</span></div>
+          <div class="lab-layout">
+            <div class="column-stack">
+              <article class="panel input-panel">
+                <div class="panel-heading"><div><div class="panel-kicker">STRUCTURE INPUT</div><h2>Define your molecule</h2></div><span class="step-badge">01</span></div>
+                <label for="molecule-name">Molecule name <span class="optional">OPTIONAL</span></label>
+                <input id="molecule-name" type="text" maxlength="120" placeholder="e.g. Quercetin" autocomplete="off">
+                <label for="molecule-smiles">SMILES <span class="required">REQUIRED</span></label>
+                <textarea id="molecule-smiles" rows="4" maxlength="1200" placeholder="Paste a SMILES string…"></textarea>
+                <div class="input-hint">Structure is analyzed locally by RDKit. For name-based lookup, use Compound Explorer.</div>
+                <div class="input-actions"><button class="button button-primary" id="analyze-button">Analyze structure <span>→</span></button><button class="button button-secondary" id="clear-lab">Clear</button></div>
+                <div class="inline-error" id="lab-error" role="alert"></div>
+              </article>
+              <article class="panel quick-panel">
+                <div class="panel-kicker">QUICK START</div><h3>Load a known example</h3>
+                <div class="starter-chips" id="lab-starters"></div>
+              </article>
+              <article class="notice-card"><span class="notice-icon">ⓘ</span><p><strong>Research context.</strong> Calculated descriptors and Lipinski-style thresholds are early property screens. They are not evidence of target binding or therapeutic benefit.</p></article>
+            </div>
+            <div class="column-stack">
+              <article class="panel structure-panel">
+                <div class="panel-heading"><div><div class="panel-kicker">3D CONFORMER</div><h2 id="structure-title">Waiting for a structure</h2></div><span class="viewer-badge"><i></i> INTERACTIVE</span></div>
+                <div class="viewer-wrap"><div class="viewer-canvas" id="molecule-viewer" aria-label="Interactive three-dimensional molecule viewer"><div class="empty-state"><div class="empty-symbol">⌬</div><strong>Your structure will appear here</strong><span>Drag to rotate · scroll to zoom</span></div></div><div class="viewer-controls"><button id="viewer-reset" type="button" title="Reset view">⌖</button><span>DRAG TO ROTATE <b>·</b> SCROLL TO ZOOM <b>·</b> CTRL+DRAG TO PAN</span></div></div>
+                <div class="structure-caption"><span id="structure-formula">No molecule loaded</span><span id="structure-atoms">—</span></div>
+              </article>
+              <article class="panel properties-panel">
+                <div class="panel-heading"><div><div class="panel-kicker">COMPUTED PROFILE</div><h2>Physicochemical descriptors</h2></div><span class="source-label">RDKit</span></div>
+                <div class="property-grid" id="property-grid"><div class="property-placeholder">Analyze a structure to see molecular properties.</div></div>
+              </article>
+              <article class="panel screening-panel">
+                <div class="panel-heading"><div><div class="panel-kicker">EARLY PROPERTY SCREEN</div><h2>Lipinski-style checks</h2></div><span class="score-pill" id="screening-score">—</span></div>
+                <div id="screening-checks" class="check-list"><div class="property-placeholder">No screening profile yet.</div></div>
+                <p class="small-note">A broad heuristic only; this score is not an activity, safety, or clinical prediction.</p>
+              </article>
+              <article class="panel admet-panel">
+                <div class="panel-heading"><div><div class="panel-kicker">PHARMACOKINETICS + TOXICITY</div><h2>Predicted ADMET profile</h2></div><span class="source-label">DEEP-PK</span></div>
+                <p class="admet-disclosure">Running this sends the molecule's SMILES to the external Deep-PK service from the pkCSM group. Its privacy notice says submitted data are deleted 7 days after results are ready. Do not submit confidential or unpublished structures. <a href="https://biosig.lab.uq.edu.au/deeppk/privacy" target="_blank" rel="noopener noreferrer">Privacy details ↗</a></p>
+                <button class="button button-secondary admet-run" id="run-lab-admet" data-admet-scope="lab" disabled>Run external ADMET prediction <span>→</span></button>
+                <div class="admet-results" id="lab-admet-results"><div class="property-placeholder">Analyze a molecule, then request its ADMET profile.</div></div>
+                <p class="small-note">Model estimates are not experimental measurements, clinical advice, or validated safety decisions.</p>
+              </article>
+              <div class="panel-foot-actions"><button class="button button-secondary" id="save-candidate" disabled>＋ Save to comparison</button><button class="button button-secondary" id="download-sdf" disabled>↓ Download 3D SDF</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-section" id="page-explorer" aria-labelledby="explorer-title">
+          <div class="section-head"><div><div class="eyebrow">DRUGFORGE / COMPOUND EXPLORER</div><h1 id="explorer-title">Search the known chemical space.</h1><p class="lede">Look up a drug, phytochemical, or SMILES string across public compound databases and inspect available assay records.</p></div><span class="tag"><i></i> PUBLIC DATABASES</span></div>
+          <article class="panel search-panel">
+            <div class="search-control"><label for="compound-query">Compound name or SMILES</label><div class="search-row"><input id="compound-query" type="search" placeholder="Try quercetin, curcumin, aspirin, or paste SMILES…" autocomplete="off"><select id="query-type" aria-label="Input format"><option>Auto-detect</option><option>Name</option><option>SMILES</option></select><button class="button button-primary" id="search-button"><span>⌕</span> Search records</button></div><div class="input-hint">Search runs against PubChem PUG REST and ChEMBL web services. Live network access is needed.</div></div>
+            <div class="inline-error" id="search-error" role="alert"></div>
+          </article>
+          <div class="search-results" id="search-results"><div class="empty-panel"><div class="empty-symbol">⌕</div><h2>Search by name or structure</h2><p>Enter a compound name or SMILES to explore public chemical and bioactivity records.</p><div class="example-searches"><button data-query="Quercetin">Quercetin</button><button data-query="Curcumin">Curcumin</button><button data-query="Withaferin A">Withaferin A</button><button data-query="Berberine">Berberine</button></div></div></div>
+          <div class="source-footnote">Records are retrieved from <a href="https://pubchem.ncbi.nlm.nih.gov/" target="_blank" rel="noopener noreferrer">PubChem</a> and <a href="https://www.ebi.ac.uk/chembl/" target="_blank" rel="noopener noreferrer">ChEMBL</a>. Database entries and assay measurements may be incomplete or context-dependent.</div>
+        </section>
+
+        <section class="page-section" id="page-compare" aria-labelledby="compare-title">
+          <div class="section-head"><div><div class="eyebrow">DRUGFORGE / CANDIDATE REVIEW</div><h1 id="compare-title">Compare without losing context.</h1><p class="lede">Review locally saved candidates side by side. Your shortlist is stored in this browser only.</p></div><span class="tag" id="compare-count-tag">0 SAVED</span></div>
+          <div class="compare-content" id="compare-content"><div class="empty-panel"><div class="empty-symbol">▤</div><h2>Your shortlist is ready</h2><p>Analyze a molecule or open a starter compound, then save it here for comparison.</p><button class="button button-primary" data-go="lab">Open molecule lab <span>→</span></button></div></div>
+        </section>
+
+        <section class="page-section" id="page-library" aria-labelledby="library-title">
+          <div class="section-head"><div><div class="eyebrow">DRUGFORGE / STARTER LIBRARY</div><h1 id="library-title">A small set of known examples.</h1><p class="lede">Use a familiar structure to explore the workflow or start a comparison.</p></div><span class="tag">06 COMPOUNDS</span></div>
+          <div class="library-grid" id="library-grid"></div>
+          <div class="notice-card"><span class="notice-icon">ⓘ</span><p>The starter library demonstrates chemical structure handling. It is not a recommendation list and does not imply any treatment effect.</p></div>
+        </section>
+
+        <section class="page-section" id="page-copilot" aria-labelledby="copilot-title">
+          <div class="section-head"><div><div class="eyebrow">DRUGFORGE / RESEARCH NOTES</div><h1 id="copilot-title">Turn descriptors into a readable note.</h1><p class="lede">Ask about the current profile or shortlist. Responses are rule-based and grounded only in values shown in this workspace.</p></div><span class="tag">LOCAL DEMO MODE</span></div>
+          <div class="copilot-layout">
+            <article class="panel copilot-chat">
+              <div class="panel-heading"><div><div class="panel-kicker">RESEARCH ASSISTANT</div><h2>Workspace notes</h2></div><span class="assistant-orb">✳</span></div>
+              <div class="chat-history" id="chat-history"><div class="assistant-message"><span class="message-avatar">DF</span><div><small>DRUGFORGE NOTES</small><p>I can summarize the active molecular profile, explain the property screen, or describe your shortlist. I do not call a language model or retrieve literature in this prototype.</p></div></div></div>
+              <div class="suggestion-row"><button data-prompt="Summarize the active molecule profile">Summarize active profile</button><button data-prompt="Explain the Lipinski-style screen">Explain the screen</button><button data-prompt="Compare my shortlist">Summarize shortlist</button></div>
+              <form id="copilot-form" class="chat-input-row"><input id="copilot-input" type="text" maxlength="300" placeholder="Ask about your current workspace…" autocomplete="off"><button class="button button-primary" type="submit" aria-label="Send note">↑</button></form>
+            </article>
+            <aside class="column-stack">
+              <article class="panel"><div class="panel-kicker">CURRENT CONTEXT</div><h3 id="copilot-context-title">No molecule selected</h3><p class="card-copy" id="copilot-context-copy">Analyze a structure to make it available for local notes.</p></article>
+              <article class="notice-card"><span class="notice-icon">ⓘ</span><p><strong>Evidence boundary.</strong> This panel uses fixed logic and workspace values only. It does not generate scientific claims, consult external literature, or replace expert review.</p></article>
+            </aside>
+          </div>
+        </section>
+
+        <footer class="site-footer"><span>DRUGFORGE V3.5 · COMPUTATIONAL RESEARCH PROTOTYPE</span><span>Not for diagnosis, treatment, or clinical decision-making</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
+  <script id="starter-data" type="application/json">{{ starters|tojson }}</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js" defer></script>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
